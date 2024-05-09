@@ -66,9 +66,17 @@ func main() {
 		for i, t := range input_data {
 			(input_data)[i] = strings.TrimSpace(t)
 		}
-		file := (*args)[0]
 		//build
-		build_cmd_str := strings.Split(strings.Replace(config_file.Build_command, "<file>", file, -1), " ")
+		raw_build_str := config_file.Build_command
+		if strings.Contains(raw_build_str, "<file>") {
+			if len(*args) == 0 {
+				fmt.Println(pwettyPwint("specify a file to be compiled", textProperties{Bold: true, Color: "#fc0303"}))
+				return
+			}
+			file := (*args)[0]
+			raw_build_str = strings.Replace(raw_build_str, "<file>", file, -1)
+		}
+		build_cmd_str := strings.Split(raw_build_str, " ")
 		Build := exec.Command(build_cmd_str[0], build_cmd_str[1:]...)
 		compiler_err_txt, _ := Build.CombinedOutput()
 		if len(compiler_err_txt) > 0 {
@@ -79,7 +87,16 @@ func main() {
 		//run
 		var wg sync.WaitGroup
 		mut := &sync.Mutex{}
-		run_cmd_str := strings.Split(strings.Replace(config_file.Run_command, "<file>", file, -1), " ")
+		raw_run_str := config_file.Run_command
+		if strings.Contains(raw_build_str, "<file>") {
+			if len(*args) == 0 {
+				fmt.Println(pwettyPwint("specify a file to be ran", textProperties{Bold: true, Color: "#fc0303"}))
+				return
+			}
+			file := (*args)[0]
+			raw_run_str = strings.Replace(raw_run_str, "<file>", file, -1)
+		}
+		run_cmd_str := strings.Split(raw_run_str, " ")
 		results := make([]string, len(input_data))
 		for i, t := range input_data {
 			wg.Add(1)
