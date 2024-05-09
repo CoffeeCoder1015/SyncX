@@ -1,0 +1,6 @@
+{
+    "build_command":"",
+    "run_command":"go run <file>",
+    "batch_separator":"!new",
+    "input_file":"input.txt"
+}
