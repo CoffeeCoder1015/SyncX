@@ -88,7 +88,7 @@ func main() {
 		var wg sync.WaitGroup
 		mut := &sync.Mutex{}
 		raw_run_str := config_file.Run_command
-		if strings.Contains(raw_build_str, "<file>") {
+		if strings.Contains(raw_run_str, "<file>") {
 			if len(*args) == 0 {
 				fmt.Println(pwettyPwint("specify a file to be ran", textProperties{Bold: true, Color: "#fc0303"}))
 				return
