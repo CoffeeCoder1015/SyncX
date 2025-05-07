@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"os"
 	"os/exec"
@@ -30,7 +31,37 @@ func loadConfig(configs *Config) {
 	}
 }
 
+func parseArgs() {
+	args := os.Args
+	fmt.Println(args)
+	if len(args) < 2 {
+		println("No arguments provided")
+		return
+	}
+
+	template :=
+		`{
+			"build_command":"",
+			"run_command":"go run <file>",
+			"batch_separator":"!new",
+			"input_file":"input.txt"
+		}`
+
+	command := args[1]
+	switch command {
+	case "init":
+		// do init
+		if _, err := os.Stat("config.json"); errors.Is(err, os.ErrNotExist) {
+			file, _ := os.Create("config.json")
+			file.WriteString(template)
+		}
+	}
+
+}
+
 func main() {
+	parseArgs()
+
 	config_file := Config{}
 	loadConfig(&config_file)
 
