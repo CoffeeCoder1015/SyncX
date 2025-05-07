@@ -28,13 +28,14 @@ func loadConfig(configs *Config) {
 	}
 }
 
-func parseArgs() {
+func parseArgs(config_file Config) {
 	args := os.Args
 	fmt.Println(args)
 	if len(args) < 2 {
 		println("No arguments provided")
 		return
 	}
+	argsWNoCommand := args[2:]
 
 	template :=
 		`{
@@ -52,15 +53,29 @@ func parseArgs() {
 			file, _ := os.Create("config.json")
 			file.WriteString(template)
 		}
+	case "run":
+		placeHolderInBuild := strings.Contains(config_file.Build_command, "<file>")
+		placeHolderInRun := strings.Contains(config_file.Run_command, "<file>")
+		placeHolderFound := placeHolderInBuild || placeHolderInRun
+		file := ""
+		if placeHolderFound {
+			if len(argsWNoCommand) == 0 {
+				fmt.Println(pwettyPwint("specify a file to be compiled", textProperties{Bold: true, Color: "#fc0303"}))
+				return
+			}
+			file = (argsWNoCommand)[0]
+		}
+		syncRun(config_file, file)
 	}
 
 }
 
 func main() {
-	parseArgs()
 
 	config_file := Config{}
 	loadConfig(&config_file)
+
+	parseArgs(config_file)
 
 	shell_name := pwettyPwint("syncx", textProperties{Color: []int{34, 105, 212}})
 	shell := newShell(shell_name + " >>>")
